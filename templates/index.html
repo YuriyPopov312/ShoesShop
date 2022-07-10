@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Интерент-магазин</title>
+{% endblock %}
+
+{% block body %}
+  <main>
+    <div class="container">
+      <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+      {% for sh in data %}
+        <div class="col">
+          <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3">
+              <h4 class="my-0 fw-normal">{{sh.title}}</h4>
+            </div>
+            <div class="card-body">
+              <h1 class="card-title pricing-card-title">{{sh.price}} руб.</h1>
+              <h6>{{sh.descript}}</h6>
+              <a href="#" class="w-100 btn btn-lg btn-outline-primary">Купить</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  </main>
+{% endblock %}
