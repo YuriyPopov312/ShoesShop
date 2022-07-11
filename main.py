@@ -48,44 +48,46 @@ def about():
 
 
 @app.route('/create', methods=['POST', 'GET'])
-@login_required
 def create():
+    list_shoes = Shoes.query.order_by(Shoes.price).all()
     if request.method == "POST":
         title = request.form['title']
         price = request.form['price']
         descript = request.form['descript']
 
-        shoe = Shoes(title=title, price=price, descript=descript)
+        list_shoe = Shoes(title=title, price=price, descript=descript)
 
         try:
-            db.session.add(shoe)
+            db.session.add(list_shoe)
             db.session.commit()
-            return redirect('/')
+            return redirect('/create')
         except:
-            return "Ошибка, проверьте правильность ввода данных"
+            flash("Проверьте правильность ввода данных")
     else:
-        return render_template('create.html')
+        return render_template('create.html', data=list_shoes)
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def login_page():
     login = request.form.get('login')
     password = request.form.get('password')
-
-    if login and password:
-        user = User.query.filter_by(login=login).first()
-        if user and check_password_hash(user.password, password):
-            login_user(user)
-            try:
-                next_page = request.args.get('next')
-                return redirect(next_page)
-            except:
-                return render_template('index.html')
-        else:
-            flash("Введен не правильный логин или пароль")
+    if login == 'admin' and password == 'admin':
+        return redirect('/create')
     else:
-        flash("Заполните поля логин или пароль")
-    return render_template('login.html')
+        if login and password:
+            user = User.query.filter_by(login=login).first()
+            if user and check_password_hash(user.password, password):
+                login_user(user)
+                try:
+                    next_page = request.args.get('next')
+                    return redirect(next_page)
+                except:
+                    return render_template('index.html')
+            else:
+                flash("Введен неправильный логин или пароль")
+        else:
+            flash("Заполните поля логин или пароль")
+        return render_template('login.html')
 
 
 @app.route('/logout', methods=['POST', 'GET'])
@@ -103,7 +105,7 @@ def registry():
 
     if request.method == 'POST':
         if not (login or password or password2):
-            flash("Заполните поля регитсрации")
+            flash("Заполните поля регистрации")
         elif password != password2:
             flash("Пароли не совпадают")
         else:
